@@ -1,4 +1,3 @@
-# Registro de Gastos con IA y Voz
 
 Este repositorio contiene la base de una aplicación pensada para registrar gastos
 de forma privada. Incluye un pequeño backend en Python y una interfaz web
