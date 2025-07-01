@@ -6,7 +6,24 @@
 </head>
 <body>
     <h1>Registro de Gastos</h1>
+    <h2>Nueva Familia</h2>
+    <form id="family-form">
+        <input type="text" id="family-name" placeholder="Nombre familia" required />
+        <button type="submit">Crear Familia</button>
+    </form>
+
+    <h2>Nuevo Usuario</h2>
+    <form id="user-form">
+        <select id="family-select"></select>
+        <input type="text" id="username" placeholder="Usuario" required />
+        <input type="password" id="userpass" placeholder="Contraseña" required />
+        <button type="submit">Crear Usuario</button>
+    </form>
+
     <form id="gasto-form">
+        <select id="usuario"></select>
+        <select id="cuenta"></select>
+        <select id="categoria"></select>
         <input type="text" id="descripcion" placeholder="Descripción" required />
         <input type="number" id="cantidad" placeholder="Cantidad" required />
         <button type="submit">Agregar</button>
