@@ -4,5 +4,6 @@
         "dockerfile": "../Dockerfile",
         "context": ".."
     },
-    "forwardPorts": [8000]
+    "forwardPorts": [8000, 8001],
+    "postStartCommand": "bash .devcontainer/start_services.sh"
 }
