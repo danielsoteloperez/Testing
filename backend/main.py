@@ -1,26 +1,47 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import sqlite3
 from hashlib import sha256
+import logging
 
 app = FastAPI()
 
+# allow requests from the frontend served on a different origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# basic logging to a file
+logging.basicConfig(filename="app.log", level=logging.INFO, format="%(asctime)s %(message)s")
+
 DB_PATH = "expenses.db"
+
+# path to the local SQLite database
+
+
+def get_conn():
+    """Return a connection to the SQLite database."""
+    return sqlite3.connect(DB_PATH)
 
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     c = conn.cursor()
     c.execute(
         """CREATE TABLE IF NOT EXISTS families (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT
         )"""
     )
     c.execute(
         """CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             family_id INTEGER,
             username TEXT UNIQUE,
             password TEXT,
@@ -28,14 +49,14 @@ def init_db():
         )"""
     )
     c.execute(
-        "CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
+        "CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
     )
     c.execute(
-        "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
+        "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
     )
     c.execute(
         """CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
             account_id INTEGER,
             category_id INTEGER,
@@ -64,6 +85,7 @@ def init_db():
         c.execute("INSERT INTO categories (user_id, name) VALUES (?, ?)", (user_id, 'Compra'))
     conn.commit()
     conn.close()
+    logging.info("Database initialised")
 
 
 init_db()
@@ -92,7 +114,8 @@ class UserCreate(BaseModel):
 
 @app.get("/families/", response_model=List[Family])
 def list_families():
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Listing families")
+    conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, name FROM families")
     rows = c.fetchall()
@@ -102,7 +125,8 @@ def list_families():
 
 @app.post("/families/", response_model=Family)
 def create_family(family: FamilyCreate):
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Creating family %s", family.name)
+    conn = get_conn()
     c = conn.cursor()
     c.execute("INSERT INTO families (name) VALUES (?)", (family.name,))
     conn.commit()
@@ -113,7 +137,8 @@ def create_family(family: FamilyCreate):
 
 @app.get("/users/", response_model=List[User])
 def list_users():
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Listing users")
+    conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, family_id, username FROM users")
     rows = c.fetchall()
@@ -123,7 +148,8 @@ def list_users():
 
 @app.post("/users/", response_model=User)
 def create_user(user: UserCreate):
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Creating user %s", user.username)
+    conn = get_conn()
     c = conn.cursor()
     hashed = sha256(user.password.encode()).hexdigest()
     c.execute(
@@ -175,7 +201,8 @@ class ExpenseCreate(BaseModel):
 
 @app.get("/accounts/", response_model=List[Account])
 def list_accounts():
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Listing accounts")
+    conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, name FROM accounts")
     rows = c.fetchall()
@@ -185,7 +212,8 @@ def list_accounts():
 
 @app.post("/accounts/", response_model=Account)
 def create_account(account: AccountCreate):
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Creating account %s for user %s", account.name, account.user_id)
+    conn = get_conn()
     c = conn.cursor()
     c.execute(
         "INSERT INTO accounts (user_id, name) VALUES (?, ?)",
@@ -199,7 +227,8 @@ def create_account(account: AccountCreate):
 
 @app.get("/categories/", response_model=List[Category])
 def list_categories():
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Listing categories")
+    conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, name FROM categories")
     rows = c.fetchall()
@@ -209,7 +238,8 @@ def list_categories():
 
 @app.post("/categories/", response_model=Category)
 def create_category(category: CategoryCreate):
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Creating category %s", category.name)
+    conn = get_conn()
     c = conn.cursor()
     c.execute(
         "INSERT INTO categories (user_id, name) VALUES (?, ?)",
@@ -223,7 +253,8 @@ def create_category(category: CategoryCreate):
 
 @app.post("/expenses/", response_model=Expense)
 def create_expense(expense: ExpenseCreate):
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Creating expense %s %.2f", expense.description, expense.amount)
+    conn = get_conn()
     c = conn.cursor()
     c.execute(
         "INSERT INTO expenses (user_id, account_id, category_id, description, amount) VALUES (?, ?, ?, ?, ?)",
@@ -243,7 +274,8 @@ def create_expense(expense: ExpenseCreate):
 
 @app.get("/expenses/", response_model=List[Expense])
 def list_expenses():
-    conn = sqlite3.connect(DB_PATH)
+    logging.info("Listing expenses")
+    conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, user_id, account_id, category_id, description, amount FROM expenses")
     rows = c.fetchall()
