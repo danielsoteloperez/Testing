@@ -6,6 +6,7 @@ const usuarioSel = document.getElementById('usuario');
 const familyForm = document.getElementById('family-form');
 const userForm = document.getElementById('user-form');
 const familySelect = document.getElementById('family-select');
+const familiesList = document.getElementById('familias');
 
 async function cargarOpciones() {
     const famResp = await fetch('http://localhost:8000/families/');
@@ -14,7 +15,7 @@ async function cargarOpciones() {
         const opt = document.createElement('option');
         opt.value = f.id;
         opt.textContent = f.name;
-        familySelect.appendChild(opt.cloneNode(true));
+        familySelect.appendChild(opt);
     });
 
     const userResp = await fetch('http://localhost:8000/users/');
@@ -42,6 +43,32 @@ async function cargarOpciones() {
         opt.value = c.id;
         opt.textContent = c.name;
         categorias.appendChild(opt);
+    });
+}
+
+async function cargarFamilias() {
+    const famResp = await fetch('http://localhost:8000/families/');
+    const fams = await famResp.json();
+    const userResp = await fetch('http://localhost:8000/users/');
+    const users = await userResp.json();
+    familiesList.innerHTML = '';
+    fams.forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f.name;
+        const sub = document.createElement('ul');
+        users.filter(u => u.family_id === f.id).forEach(u => {
+            const uItem = document.createElement('li');
+            uItem.textContent = u.username + ' ';
+            const btn = document.createElement('button');
+            btn.textContent = 'Impersonar';
+            btn.addEventListener('click', () => {
+                usuarioSel.value = u.id;
+            });
+            uItem.appendChild(btn);
+            sub.appendChild(uItem);
+        });
+        li.appendChild(sub);
+        familiesList.appendChild(li);
     });
 }
 
@@ -107,4 +134,5 @@ userForm.addEventListener('submit', async (e) => {
 });
 
 cargarOpciones();
+cargarFamilias();
 cargarGastos();
