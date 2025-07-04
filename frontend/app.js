@@ -12,6 +12,7 @@ const categoryName = document.getElementById('category-name');
 const familiesList = document.getElementById('familias');
 const selectedInfo = document.getElementById('selected-info');
 const voiceBtn = document.getElementById('voice-btn');
+const headerUserInfo = document.getElementById('header-user-info');
 
 let familiesData = [];
 let usersData = [];
@@ -29,14 +30,22 @@ async function logClient(msg) {
 }
 
 function updateSelectedInfo() {
-    const userId = parseInt(usuarioSel.value);
+    const userId = usuarioSel ? parseInt(usuarioSel.value) : NaN;
     const user = usersData.find(u => u.id === userId);
     const family = user ? familiesData.find(f => f.id === user.family_id) : null;
-    if (!selectedInfo) return;
-    if (user && family) {
-        selectedInfo.textContent = `Familia: ${family.name} - Usuario: ${user.username}`;
-    } else {
-        selectedInfo.textContent = '';
+    if (selectedInfo) {
+        if (user && family) {
+            selectedInfo.textContent = `Familia: ${family.name} - Usuario: ${user.username}`;
+        } else {
+            selectedInfo.textContent = '';
+        }
+    }
+    if (headerUserInfo) {
+        if (user && family) {
+            headerUserInfo.innerHTML = `<span class="person">\u{1F464}</span><span>${user.username} - ${family.name}</span>`;
+        } else {
+            headerUserInfo.textContent = '';
+        }
     }
 }
 
@@ -67,23 +76,27 @@ async function cargarOpciones() {
 
     const userResp = await fetch('http://localhost:8000/users/');
     usersData = await userResp.json();
-    usersData.forEach(u => {
-        const opt = document.createElement('option');
-        opt.value = u.id;
-        opt.textContent = u.username;
-        usuarioSel.appendChild(opt);
-    });
+    if (usuarioSel) {
+        usersData.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = u.username;
+            usuarioSel.appendChild(opt);
+        });
+    }
 
-    const accResp = await fetch('http://localhost:8000/accounts/');
-    const accounts = await accResp.json();
-    accounts.forEach(a => {
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.name;
-        cuentas.appendChild(opt);
-    });
+    if (cuentas) {
+        const accResp = await fetch('http://localhost:8000/accounts/');
+        const accounts = await accResp.json();
+        accounts.forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.id;
+            opt.textContent = a.name;
+            cuentas.appendChild(opt);
+        });
+    }
 
-    if (usersData.length) {
+    if (usersData.length && categorias) {
         const firstUser = usersData[0];
         await cargarCategorias(firstUser.family_id);
     }
@@ -92,6 +105,7 @@ async function cargarOpciones() {
 }
 
 async function cargarCategorias(familyId) {
+    if (!categorias) return;
     categorias.innerHTML = '';
     const catResp = await fetch(`http://localhost:8000/categories/family/${familyId}`);
     const cats = await catResp.json();
@@ -214,9 +228,11 @@ if (categoryForm) {
                 name: categoryName.value
             })
         });
-        const selectedUser = usersData.find(u => u.id === parseInt(usuarioSel.value));
-        if (selectedUser && selectedUser.family_id === famId) {
-            await cargarCategorias(famId);
+        if (usuarioSel && categorias) {
+            const selectedUser = usersData.find(u => u.id === parseInt(usuarioSel.value));
+            if (selectedUser && selectedUser.family_id === famId) {
+                await cargarCategorias(famId);
+            }
         }
         categoryForm.reset();
     });
