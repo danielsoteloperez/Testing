@@ -13,6 +13,18 @@ const voiceBtn = document.getElementById('voice-btn');
 let familiesData = [];
 let usersData = [];
 
+async function logClient(msg) {
+    try {
+        await fetch('http://localhost:8000/client-log/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+    } catch (e) {
+        console.warn('No se pudo enviar el log');
+    }
+}
+
 function updateSelectedInfo() {
     const userId = parseInt(usuarioSel.value);
     const user = usersData.find(u => u.id === userId);
@@ -159,10 +171,13 @@ userForm.addEventListener('submit', async (e) => {
 });
 
 function procesarComandoVoz(texto) {
+    logClient(`voz: ${texto}`);
     const re = /inserta\s+(\d+(?:[\.,]\d+)?)\s*(?:euros|€)?\s+de\s+gastos\s+de\s+(\w+)\s+en\s+el\s+(\w+)/i;
     const m = texto.match(re);
     if (!m) {
-        console.warn('No se pudo interpretar el comando');
+        const ejemplo = 'inserta 5 euros de gastos de comida en el super';
+        console.warn(`No se pudo interpretar el comando: "${texto}". Debe ser similar a "${ejemplo}"`);
+        logClient(`Error: comando no coincide con la expresión. Recibido: "${texto}"`);
         return;
     }
     const cantidad = parseFloat(m[1].replace(',', '.'));
@@ -172,6 +187,7 @@ function procesarComandoVoz(texto) {
     const catOption = Array.from(categorias.options).find(o => o.textContent.toLowerCase() === categoriaNom);
     if (!user || !catOption) {
         console.warn('Usuario o categoría no encontrados');
+        logClient('Error: usuario o categoría no encontrados');
         return;
     }
     usuarioSel.value = user.id;
@@ -180,6 +196,7 @@ function procesarComandoVoz(texto) {
     document.getElementById('descripcion').value = desc;
     document.getElementById('cantidad').value = cantidad;
     form.dispatchEvent(new Event('submit'));
+    logClient(`Gasto insertado: ${cantidad} en ${categoriaNom}`);
 }
 
 function iniciarVoz() {

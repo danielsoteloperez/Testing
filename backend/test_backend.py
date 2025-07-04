@@ -23,6 +23,15 @@ def test_flow():
     assert any(e.description == 'test' for e in gastos)
 
 
+def test_client_log():
+    # ensure the log file is empty before logging
+    open('app.log', 'w').close()
+    main.client_log(main.ClientLog(message='mensaje'))
+    with open('app.log') as f:
+        data = f.read()
+    assert 'CLIENT: mensaje' in data
+
+
 if __name__ == '__main__':
     test_flow()
     print('Backend tests passed')

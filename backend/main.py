@@ -17,8 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# basic logging to a file
-logging.basicConfig(filename="app.log", level=logging.INFO, format="%(asctime)s %(message)s")
+# basic logging to a file. force=True ensures the handler is added even when
+# tests configure logging beforehand.
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s %(message)s",
+    force=True,
+)
 
 DB_PATH = "expenses.db"
 
@@ -140,6 +146,10 @@ class ExpenseCreate(BaseModel):
     amount: float
 
 
+class ClientLog(BaseModel):
+    message: str
+
+
 @app.get("/accounts/", response_model=List[Account])
 def list_accounts():
     logging.info("Listing accounts")
@@ -232,3 +242,10 @@ def list_expenses():
         )
         for r in rows
     ]
+
+
+@app.post("/client-log/")
+def client_log(log: ClientLog):
+    """Record logs sent from the frontend."""
+    logging.info("CLIENT: %s", log.message)
+    return {"status": "ok"}
