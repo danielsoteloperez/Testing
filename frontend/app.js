@@ -175,8 +175,9 @@ function procesarComandoVoz(texto) {
     const re = /inserta\s+(\d+(?:[\.,]\d+)?)\s*(?:euros|€)?\s+de\s+gastos\s+de\s+(\w+)\s+en\s+el\s+(\w+)/i;
     const m = texto.match(re);
     if (!m) {
-        console.warn('No se pudo interpretar el comando');
-        logClient('Error: no se pudo interpretar el comando');
+        const ejemplo = 'inserta 5 euros de gastos de comida en el super';
+        console.warn(`No se pudo interpretar el comando: "${texto}". Debe ser similar a "${ejemplo}"`);
+        logClient(`Error: comando no coincide con la expresión. Recibido: "${texto}"`);
         return;
     }
     const cantidad = parseFloat(m[1].replace(',', '.'));
