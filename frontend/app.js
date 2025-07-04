@@ -104,6 +104,7 @@ async function cargarCategorias(familyId) {
 }
 
 async function cargarFamilias() {
+    if (!familiesList) return;
     const famResp = await fetch('http://localhost:8000/families/');
     const fams = await famResp.json();
     const userResp = await fetch('http://localhost:8000/users/');
@@ -143,6 +144,7 @@ async function cargarGastos() {
     });
 }
 
+if (form) {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const descripcion = document.getElementById('descripcion').value;
@@ -167,7 +169,9 @@ form.addEventListener('submit', async (e) => {
     form.reset();
     updateSelectedInfo();
 });
+}
 
+if (familyForm) {
 familyForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('family-name').value;
@@ -178,7 +182,9 @@ familyForm.addEventListener('submit', async (e) => {
     });
     location.reload();
 });
+}
 
+if (userForm) {
 userForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
@@ -194,6 +200,7 @@ userForm.addEventListener('submit', async (e) => {
     });
     location.reload();
 });
+}
 
 if (categoryForm) {
     categoryForm.addEventListener('submit', async (e) => {
@@ -270,7 +277,7 @@ if (voiceBtn && voiceBtn.addEventListener) {
 async function init() {
     await cargarOpciones();
     await cargarFamilias();
-    await cargarGastos();
+    if (lista) await cargarGastos();
 }
 
 init();
