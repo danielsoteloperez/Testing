@@ -79,7 +79,13 @@ def create_family(family: FamilyCreate):
     conn.commit()
     fam_id = c.lastrowid
     # default categories for the family
-    defaults = ["Alquiler", "Super", "Compra", "Bares", "Farmacia", "Luz", "Gasolina"]
+    defaults = [
+        "Alquiler",
+        "Super",
+        "Bares",
+        "Farmacia",
+        "Gasolina",
+    ]
     for name in defaults:
         c.execute("INSERT INTO categories (family_id, name) VALUES (?, ?)", (fam_id, name))
     conn.commit()

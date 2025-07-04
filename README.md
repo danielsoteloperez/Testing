@@ -41,8 +41,9 @@ registrará automáticamente el gasto.
 ## Categorías por familia
 
 Cada familia dispone de sus propias categorías. Al crear una familia se
-generan por defecto las siguientes: **Alquiler**, **Super**, **Compra**,
-**Bares**, **Farmacia**, **Luz** y **Gasolina**. Se pueden añadir más categorías
-enviando peticiones al endpoint `/categories/` con el `family_id`
-correspondiente y el nombre deseado.
+generan por defecto las siguientes: **Alquiler**, **Super** (también
+conocida como **Compra**), **Bares** (o **Bar**), **Farmacia** y
+**Gasolina**. Se pueden añadir más categorías enviando peticiones al
+endpoint `/categories/` con el `family_id` correspondiente y el nombre
+deseado.
 
