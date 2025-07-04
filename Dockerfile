@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 RUN apt-get update \
-    && apt-get install -y git nodejs npm openjdk-11-jdk \
+    && apt-get install -y git nodejs npm openjdk-17-jdk rsync \
     && npm install -g cordova \
     && rm -rf /var/lib/apt/lists/*
 

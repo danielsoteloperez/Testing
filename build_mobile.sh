@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Load Android environment variables if available
+if [ -f .devcontainer/android_env.sh ]; then
+    source .devcontainer/android_env.sh
+fi
+
 # Setup Cordova project
 if [ ! -d mobile ]; then
     cordova create mobile com.expensetracker ExpenseTracker
