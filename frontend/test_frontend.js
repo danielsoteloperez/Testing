@@ -1,5 +1,7 @@
 const fs = require('fs');
 const html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+const famHtml = fs.readFileSync(__dirname + '/familias.html', 'utf8');
+const catHtml = fs.readFileSync(__dirname + '/categorias.html', 'utf8');
 const vm = require('vm');
 
 // Minimal DOM stubs
@@ -55,17 +57,17 @@ global.fetch = (url, opts) => {
 
 global.location = { reload() {} };
 
-function expect(str, msg){
-  if(!html.includes(str)) throw new Error('Missing ' + msg);
+function expect(source, str, msg){
+  if(!source.includes(str)) throw new Error('Missing ' + msg);
 }
 
-expect('family-form', 'family form');
-expect('user-form', 'user form');
-expect('gasto-form', 'expense form');
-expect('usuario', 'user select');
-expect('voice-btn', 'voice button');
-expect('category-form', 'category form');
-expect('step="0.01"', 'decimal input');
+expect(famHtml, 'family-form', 'family form');
+expect(famHtml, 'user-form', 'user form');
+expect(html, 'gasto-form', 'expense form');
+expect(html, 'usuario', 'user select');
+expect(html, 'voice-btn', 'voice button');
+expect(catHtml, 'category-form', 'category form');
+expect(html, 'step="0.01"', 'decimal input');
 
 // Execute the front-end script in this context
 vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));

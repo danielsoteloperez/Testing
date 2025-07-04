@@ -212,17 +212,25 @@ def list_categories_family(family_id: int):
 
 @app.post("/categories/", response_model=Category)
 def create_category(category: CategoryCreate):
-    logging.info("Creating category %s", category.name)
+    name = category.name.lower().capitalize()
+    logging.info("Creating category %s", name)
     conn = get_conn()
     c = conn.cursor()
     c.execute(
+        "SELECT id FROM categories WHERE family_id = ? AND lower(name) = lower(?)",
+        (category.family_id, name),
+    )
+    if c.fetchone():
+        conn.close()
+        raise ValueError("Category already exists")
+    c.execute(
         "INSERT INTO categories (family_id, name) VALUES (?, ?)",
-        (category.family_id, category.name),
+        (category.family_id, name),
     )
     conn.commit()
     cat_id = c.lastrowid
     conn.close()
-    return Category(id=cat_id, name=category.name)
+    return Category(id=cat_id, name=name)
 
 
 @app.post("/expenses/", response_model=Expense)

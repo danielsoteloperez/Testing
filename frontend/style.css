@@ -5,6 +5,34 @@ body {
     background: #f7f7f7;
 }
 
+header {
+    background: #333;
+    color: #fff;
+    padding: 0.5em 1em;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header nav a {
+    color: #fff;
+    margin-right: 0.5em;
+    text-decoration: none;
+}
+
+header nav a.icon {
+    margin-left: auto;
+}
+
+footer {
+    text-align: center;
+    padding: 1em;
+    color: #666;
+}
+
 .container {
     max-width: 480px;
     margin-left: auto;

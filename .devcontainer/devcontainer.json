@@ -5,5 +5,6 @@
         "context": ".."
     },
     "forwardPorts": [8000, 8001],
-    "postStartCommand": "bash .devcontainer/start_services.sh"
+    "postStartCommand": "bash .devcontainer/start_services.sh",
+    "extensions": ["eamodio.gitlens"]
 }

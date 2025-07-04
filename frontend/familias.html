@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Familias</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Familias</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="mis-gastos.html">Mis gastos</a>
+            <a href="familia.html">Gastos de la familia</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h2>Nueva Familia</h2>
+            <form id="family-form">
+                <input type="text" id="family-name" placeholder="Nombre familia" required />
+                <button type="submit" class="primary">Crear Familia</button>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Nuevo Usuario</h2>
+            <form id="user-form">
+                <select id="family-select"></select>
+                <input type="text" id="username" placeholder="Usuario" required />
+                <input type="password" id="userpass" placeholder="Contraseña" required />
+                <button type="submit" class="primary">Crear Usuario</button>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Familias Registradas</h2>
+            <ul id="familias"></ul>
+        </div>
+    </div>
+    <footer>© Derechos reservados</footer>
+    <script src="app.js"></script>
+</body>
+</html>

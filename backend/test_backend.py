@@ -61,6 +61,18 @@ def test_multiple_families():
     assert 'Extra2' in fam2_cats and 'Extra2' not in fam1_cats
 
 
+def test_duplicate_category():
+    reset_db()
+    fam = main.create_family(main.FamilyCreate(name='Fam'))
+    cat = main.create_category(main.CategoryCreate(family_id=fam.id, name='extra'))
+    assert cat.name == 'Extra'
+    try:
+        main.create_category(main.CategoryCreate(family_id=fam.id, name='Extra'))
+        raise AssertionError('Duplicate allowed')
+    except ValueError:
+        pass
+
+
 if __name__ == '__main__':
     test_flow()
     test_client_log()

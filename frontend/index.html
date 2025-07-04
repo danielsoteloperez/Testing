@@ -7,45 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>Registro de Gastos</h1>
         <nav>
-            <a href="mis-gastos.html">Mis gastos</a> |
+            <a href="mis-gastos.html">Mis gastos</a>
             <a href="familia.html">Gastos de la familia</a>
+            <a id="familia-btn" href="familias.html" class="icon">👤</a>
+            <a id="categoria-btn" href="categorias.html">Nueva Categoría</a>
         </nav>
-
-        <div class="card">
-            <h2>Nueva Familia</h2>
-            <form id="family-form">
-                <input type="text" id="family-name" placeholder="Nombre familia" required />
-                <button type="submit" class="primary">Crear Familia</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Nuevo Usuario</h2>
-            <form id="user-form">
-                <select id="family-select"></select>
-                <input type="text" id="username" placeholder="Usuario" required />
-                <input type="password" id="userpass" placeholder="Contraseña" required />
-                <button type="submit" class="primary">Crear Usuario</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Nueva Categoría</h2>
-            <form id="category-form">
-                <select id="family-category-select"></select>
-                <input type="text" id="category-name" placeholder="Nombre categoría" required />
-                <button type="submit" class="primary">Crear Categoría</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Familias Registradas</h2>
-            <ul id="familias"></ul>
-        </div>
-
+    </header>
+    <div class="container">
         <div class="card">
             <h2>Nuevo Gasto</h2>
             <form id="gasto-form">
@@ -59,9 +30,9 @@
                 <button type="button" id="voice-btn" class="voice">Agregar por Voz</button>
             </form>
         </div>
-
         <ul id="gastos"></ul>
     </div>
+    <footer>© Derechos reservados</footer>
     <script src="app.js"></script>
 </body>
 </html>
