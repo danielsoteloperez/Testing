@@ -38,7 +38,7 @@ global.fetch = (url, opts) => {
   if (url.endsWith('/families/')) return Promise.resolve({ json: () => Promise.resolve([{ id: 1, name: 'F' }]) });
   if (url.endsWith('/users/')) return Promise.resolve({ json: () => Promise.resolve([{ id: 2, family_id: 1, username: 'u' }]) });
   if (url.endsWith('/accounts/')) return Promise.resolve({ json: () => Promise.resolve([{ id: 1, name: 'C' }]) });
-  if (url.endsWith('/categories/')) return Promise.resolve({ json: () => Promise.resolve([{ id: 1, name: 'Cat' }]) });
+  if (url.includes('/categories')) return Promise.resolve({ json: () => Promise.resolve([{ id: 1, name: 'Cat' }]) });
   return Promise.resolve({ json: () => Promise.resolve([]) });
 };
 

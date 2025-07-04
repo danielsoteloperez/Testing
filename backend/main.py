@@ -78,6 +78,11 @@ def create_family(family: FamilyCreate):
     c.execute("INSERT INTO families (name) VALUES (?)", (family.name,))
     conn.commit()
     fam_id = c.lastrowid
+    # default categories for the family
+    defaults = ["Alquiler", "Super", "Compra", "Bares", "Farmacia", "Luz", "Gasolina"]
+    for name in defaults:
+        c.execute("INSERT INTO categories (family_id, name) VALUES (?, ?)", (fam_id, name))
+    conn.commit()
     conn.close()
     return Family(id=fam_id, name=family.name)
 
@@ -125,7 +130,7 @@ class Category(BaseModel):
 
 
 class CategoryCreate(BaseModel):
-    user_id: int
+    family_id: int
     name: str
 
 
@@ -187,14 +192,26 @@ def list_categories():
     return [Category(id=r[0], name=r[1]) for r in rows]
 
 
+@app.get("/categories/family/{family_id}", response_model=List[Category])
+def list_categories_family(family_id: int):
+    """List categories for a given family."""
+    logging.info("Listing categories for family %s", family_id)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("SELECT id, name FROM categories WHERE family_id = ?", (family_id,))
+    rows = c.fetchall()
+    conn.close()
+    return [Category(id=r[0], name=r[1]) for r in rows]
+
+
 @app.post("/categories/", response_model=Category)
 def create_category(category: CategoryCreate):
     logging.info("Creating category %s", category.name)
     conn = get_conn()
     c = conn.cursor()
     c.execute(
-        "INSERT INTO categories (user_id, name) VALUES (?, ?)",
-        (category.user_id, category.name),
+        "INSERT INTO categories (family_id, name) VALUES (?, ?)",
+        (category.family_id, category.name),
     )
     conn.commit()
     cat_id = c.lastrowid
@@ -229,6 +246,61 @@ def list_expenses():
     conn = get_conn()
     c = conn.cursor()
     c.execute("SELECT id, user_id, account_id, category_id, description, amount FROM expenses")
+    rows = c.fetchall()
+    conn.close()
+    return [
+        Expense(
+            id=r[0],
+            user_id=r[1],
+            account_id=r[2],
+            category_id=r[3],
+            description=r[4],
+            amount=r[5],
+        )
+        for r in rows
+    ]
+
+
+@app.get("/expenses/user/{user_id}", response_model=List[Expense])
+def list_expenses_user(user_id: int):
+    """List expenses belonging to a single user."""
+    logging.info("Listing expenses for user %s", user_id)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute(
+        "SELECT id, user_id, account_id, category_id, description, amount FROM expenses WHERE user_id = ?",
+        (user_id,),
+    )
+    rows = c.fetchall()
+    conn.close()
+    return [
+        Expense(
+            id=r[0],
+            user_id=r[1],
+            account_id=r[2],
+            category_id=r[3],
+            description=r[4],
+            amount=r[5],
+        )
+        for r in rows
+    ]
+
+
+@app.get("/expenses/family/{family_id}", response_model=List[Expense])
+def list_expenses_family(family_id: int):
+    """List expenses for all users in a family."""
+    logging.info("Listing expenses for family %s", family_id)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute(
+        """
+        SELECT e.id, e.user_id, e.account_id, e.category_id, e.description, e.amount
+        FROM expenses e
+        JOIN users u ON e.user_id = u.id
+        WHERE u.family_id = ?
+        """,
+        (family_id,),
+    )
     rows = c.fetchall()
     conn.close()
     return [
