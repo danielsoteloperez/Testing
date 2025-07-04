@@ -17,6 +17,9 @@ const elements = {
   'username': { value: 'user1' },
   'userpass': { value: 'pass' },
   'family-select': { value: '1', appendChild() {} },
+  'category-form': { addEventListener: (ev, cb) => { if (ev === 'submit') elements._cat = cb; } },
+  'family-category-select': { value: '1', appendChild() {} },
+  'category-name': { value: 'Nueva' },
   'familias': { innerHTML: '', appendChild(child) { this._child = child; } },
   'voice-btn': { addEventListener(ev, cb) { if (ev === 'click') elements._voice = cb; } }
 };
@@ -53,6 +56,7 @@ expect('user-form', 'user form');
 expect('gasto-form', 'expense form');
 expect('usuario', 'user select');
 expect('voice-btn', 'voice button');
+expect('category-form', 'category form');
 
 // Execute the front-end script in this context
 vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));
@@ -65,6 +69,10 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));
   await elements._user({ preventDefault() {} });
   const userCall = fetchCalls.find(c => c.url.endsWith('/users/') && c.opts && c.opts.method === 'POST');
   if (!userCall) throw new Error('User creation not sent');
+
+  await elements._cat({ preventDefault() {} });
+  const catCall = fetchCalls.find(c => c.url.endsWith('/categories/') && c.opts && c.opts.method === 'POST');
+  if (!catCall) throw new Error('Category creation not sent');
 
   await cargarFamilias();
   const btn = elements.familias._child.children[0].children[0].children[0];

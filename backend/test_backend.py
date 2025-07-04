@@ -24,8 +24,9 @@ def test_flow():
     fam = main.create_family(main.FamilyCreate(name='Fam1'))
     user = main.create_user(main.UserCreate(family_id=fam.id, username='u1', password='pass'))
     # default categories should exist for the family
-    fam_cats = main.list_categories_family(fam.id)
-    assert any(c.name == 'Alquiler' for c in fam_cats)
+    fam_cats = [c.name for c in main.list_categories_family(fam.id)]
+    for expected in ['Alquiler', 'Super', 'Bares', 'Farmacia', 'Gasolina']:
+        assert expected in fam_cats
     cat = main.create_category(main.CategoryCreate(family_id=fam.id, name='Extra'))
     acc = main.create_account(main.AccountCreate(user_id=user.id, name='Cuenta'))
     main.create_expense(main.ExpenseCreate(user_id=user.id, account_id=acc.id, category_id=cat.id, description='test', amount=5.0))

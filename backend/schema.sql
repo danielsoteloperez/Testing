@@ -47,8 +47,6 @@ INSERT INTO users (family_id, username, password) VALUES (1, 'root', '9f86d08188
 INSERT INTO accounts (user_id, name) VALUES (1, 'Personal');
 INSERT INTO categories (family_id, name) VALUES (1, 'Alquiler');
 INSERT INTO categories (family_id, name) VALUES (1, 'Super');
-INSERT INTO categories (family_id, name) VALUES (1, 'Compra');
 INSERT INTO categories (family_id, name) VALUES (1, 'Bares');
 INSERT INTO categories (family_id, name) VALUES (1, 'Farmacia');
-INSERT INTO categories (family_id, name) VALUES (1, 'Luz');
 INSERT INTO categories (family_id, name) VALUES (1, 'Gasolina');

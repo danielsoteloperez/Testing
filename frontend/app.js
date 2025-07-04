@@ -6,6 +6,9 @@ const usuarioSel = document.getElementById('usuario');
 const familyForm = document.getElementById('family-form');
 const userForm = document.getElementById('user-form');
 const familySelect = document.getElementById('family-select');
+const categoryForm = document.getElementById('category-form');
+const familyCatSelect = document.getElementById('family-category-select');
+const categoryName = document.getElementById('category-name');
 const familiesList = document.getElementById('familias');
 const selectedInfo = document.getElementById('selected-info');
 const voiceBtn = document.getElementById('voice-btn');
@@ -54,6 +57,12 @@ async function cargarOpciones() {
         opt.value = f.id;
         opt.textContent = f.name;
         familySelect.appendChild(opt);
+        if (familyCatSelect) {
+            const opt2 = document.createElement('option');
+            opt2.value = f.id;
+            opt2.textContent = f.name;
+            familyCatSelect.appendChild(opt2);
+        }
     });
 
     const userResp = await fetch('http://localhost:8000/users/');
@@ -186,6 +195,21 @@ userForm.addEventListener('submit', async (e) => {
     location.reload();
 });
 
+if (categoryForm) {
+    categoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await fetch('http://localhost:8000/categories/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                family_id: parseInt(familyCatSelect.value),
+                name: categoryName.value
+            })
+        });
+        location.reload();
+    });
+}
+
 function procesarComandoVoz(texto) {
     logClient(`voz: ${texto}`);
     const re = /(inserta|insertar)\s+€?\s*(\d+(?:[\.,]\d+)?)\s*€?\s+(?:de\s+gastos\s+)?(?:de|para)\s+(\w+)\s+en\s+(?:el|la|los|las)\s+(\w+)/i;
@@ -198,9 +222,13 @@ function procesarComandoVoz(texto) {
     }
     const cantidad = parseFloat(m[2].replace(',', '.'));
     const usuarioNom = m[3].toLowerCase();
-    const categoriaNom = m[4].toLowerCase();
+    let categoriaNom = m[4].toLowerCase();
+    const alias = { 'compra': 'super', 'bar': 'bares' };
+    if (alias[categoriaNom]) categoriaNom = alias[categoriaNom];
     const user = usersData.find(u => u.username.toLowerCase() === usuarioNom);
-    const catOption = Array.from(categorias.options).find(o => o.textContent.toLowerCase() === categoriaNom);
+    const catOption = Array.from(categorias.options).find(
+        o => o.textContent.toLowerCase() === categoriaNom
+    );
     if (!user || !catOption) {
         console.warn('Usuario o categoría no encontrados');
         logClient('Error: usuario o categoría no encontrados');
@@ -234,6 +262,10 @@ if (voiceBtn && voiceBtn.addEventListener) {
     voiceBtn.addEventListener('click', iniciarVoz);
 }
 
-cargarOpciones();
-cargarFamilias();
-cargarGastos();
+async function init() {
+    await cargarOpciones();
+    await cargarFamilias();
+    await cargarGastos();
+}
+
+init();
