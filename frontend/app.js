@@ -198,15 +198,20 @@ userForm.addEventListener('submit', async (e) => {
 if (categoryForm) {
     categoryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const famId = parseInt(familyCatSelect.value);
         await fetch('http://localhost:8000/categories/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                family_id: parseInt(familyCatSelect.value),
+                family_id: famId,
                 name: categoryName.value
             })
         });
-        location.reload();
+        const selectedUser = usersData.find(u => u.id === parseInt(usuarioSel.value));
+        if (selectedUser && selectedUser.family_id === famId) {
+            await cargarCategorias(famId);
+        }
+        categoryForm.reset();
     });
 }
 
