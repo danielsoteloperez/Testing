@@ -11,7 +11,7 @@ app = FastAPI()
 # allow requests from the frontend served on a different origin
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,65 +30,6 @@ def get_conn():
     return sqlite3.connect(DB_PATH)
 
 
-def init_db():
-    conn = get_conn()
-    c = conn.cursor()
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS families (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
-        )"""
-    )
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            family_id INTEGER,
-            username TEXT UNIQUE,
-            password TEXT,
-            FOREIGN KEY(family_id) REFERENCES families(id)
-        )"""
-    )
-    c.execute(
-        "CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
-    )
-    c.execute(
-        "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, name TEXT, FOREIGN KEY(user_id) REFERENCES users(id))"
-    )
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            account_id INTEGER,
-            category_id INTEGER,
-            description TEXT,
-            amount REAL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            FOREIGN KEY(account_id) REFERENCES accounts(id),
-            FOREIGN KEY(category_id) REFERENCES categories(id)
-        )"""
-    )
-    # create default family and root user if not exist
-    c.execute("SELECT id FROM users WHERE username='root'")
-    row = c.fetchone()
-    if not row:
-        c.execute("INSERT INTO families (name) VALUES ('Familia root')")
-        family_id = c.lastrowid
-        hashed = sha256('test'.encode()).hexdigest()
-        c.execute(
-            "INSERT INTO users (family_id, username, password) VALUES (?, ?, ?)",
-            (family_id, 'root', hashed),
-        )
-        user_id = c.lastrowid
-        c.execute("INSERT INTO accounts (user_id, name) VALUES (?, ?)", (user_id, 'Personal'))
-        c.execute("INSERT INTO categories (user_id, name) VALUES (?, ?)", (user_id, 'Bares'))
-        c.execute("INSERT INTO categories (user_id, name) VALUES (?, ?)", (user_id, 'Compra'))
-    conn.commit()
-    conn.close()
-    logging.info("Database initialised")
-
-
-init_db()
 
 
 class Family(BaseModel):

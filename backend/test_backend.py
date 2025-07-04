@@ -1,12 +1,16 @@
 import os
 import sys
+import sqlite3
 sys.path.insert(0, os.path.dirname(__file__))
 import main
 
 # ensure fresh database
 if os.path.exists(main.DB_PATH):
     os.remove(main.DB_PATH)
-main.init_db()
+conn = sqlite3.connect(main.DB_PATH)
+with open(os.path.join(os.path.dirname(__file__), 'schema.sql')) as f:
+    conn.executescript(f.read())
+conn.close()
 
 
 def test_flow():
@@ -17,6 +21,7 @@ def test_flow():
     main.create_expense(main.ExpenseCreate(user_id=user.id, account_id=acc.id, category_id=cat.id, description='test', amount=5.0))
     gastos = main.list_expenses()
     assert any(e.description == 'test' for e in gastos)
+
 
 if __name__ == '__main__':
     test_flow()
