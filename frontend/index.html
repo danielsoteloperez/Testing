@@ -7,33 +7,47 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Registro de Gastos</h1>
-    <h2>Nueva Familia</h2>
-    <form id="family-form">
-        <input type="text" id="family-name" placeholder="Nombre familia" required />
-        <button type="submit">Crear Familia</button>
-    </form>
+    <div class="container">
+        <h1>Registro de Gastos</h1>
 
-    <h2>Nuevo Usuario</h2>
-    <form id="user-form">
-        <select id="family-select"></select>
-        <input type="text" id="username" placeholder="Usuario" required />
-        <input type="password" id="userpass" placeholder="Contraseña" required />
-        <button type="submit">Crear Usuario</button>
-    </form>
+        <div class="card">
+            <h2>Nueva Familia</h2>
+            <form id="family-form">
+                <input type="text" id="family-name" placeholder="Nombre familia" required />
+                <button type="submit" class="primary">Crear Familia</button>
+            </form>
+        </div>
 
-    <h2>Familias Registradas</h2>
-    <ul id="familias"></ul>
+        <div class="card">
+            <h2>Nuevo Usuario</h2>
+            <form id="user-form">
+                <select id="family-select"></select>
+                <input type="text" id="username" placeholder="Usuario" required />
+                <input type="password" id="userpass" placeholder="Contraseña" required />
+                <button type="submit" class="primary">Crear Usuario</button>
+            </form>
+        </div>
 
-    <form id="gasto-form">
-        <select id="usuario"></select>
-        <select id="cuenta"></select>
-        <select id="categoria"></select>
-        <input type="text" id="descripcion" placeholder="Descripción" required />
-        <input type="number" id="cantidad" placeholder="Cantidad" required />
-        <button type="submit">Agregar</button>
-    </form>
-    <ul id="gastos"></ul>
+        <div class="card">
+            <h2>Familias Registradas</h2>
+            <ul id="familias"></ul>
+        </div>
+
+        <div class="card">
+            <h2>Nuevo Gasto</h2>
+            <form id="gasto-form">
+                <div id="selected-info" class="selected-info"></div>
+                <select id="usuario"></select>
+                <select id="cuenta"></select>
+                <select id="categoria"></select>
+                <input type="text" id="descripcion" placeholder="Descripción" required />
+                <input type="number" id="cantidad" placeholder="Cantidad" required />
+                <button type="submit" class="primary">Agregar</button>
+            </form>
+        </div>
+
+        <ul id="gastos"></ul>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>

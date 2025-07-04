@@ -7,11 +7,31 @@ const familyForm = document.getElementById('family-form');
 const userForm = document.getElementById('user-form');
 const familySelect = document.getElementById('family-select');
 const familiesList = document.getElementById('familias');
+const selectedInfo = document.getElementById('selected-info');
+
+let familiesData = [];
+let usersData = [];
+
+function updateSelectedInfo() {
+    const userId = parseInt(usuarioSel.value);
+    const user = usersData.find(u => u.id === userId);
+    const family = user ? familiesData.find(f => f.id === user.family_id) : null;
+    if (!selectedInfo) return;
+    if (user && family) {
+        selectedInfo.textContent = `Familia: ${family.name} - Usuario: ${user.username}`;
+    } else {
+        selectedInfo.textContent = '';
+    }
+}
+
+if (usuarioSel && usuarioSel.addEventListener) {
+    usuarioSel.addEventListener('change', updateSelectedInfo);
+}
 
 async function cargarOpciones() {
     const famResp = await fetch('http://localhost:8000/families/');
-    const fams = await famResp.json();
-    fams.forEach(f => {
+    familiesData = await famResp.json();
+    familiesData.forEach(f => {
         const opt = document.createElement('option');
         opt.value = f.id;
         opt.textContent = f.name;
@@ -19,8 +39,8 @@ async function cargarOpciones() {
     });
 
     const userResp = await fetch('http://localhost:8000/users/');
-    const users = await userResp.json();
-    users.forEach(u => {
+    usersData = await userResp.json();
+    usersData.forEach(u => {
         const opt = document.createElement('option');
         opt.value = u.id;
         opt.textContent = u.username;
@@ -44,6 +64,8 @@ async function cargarOpciones() {
         opt.textContent = c.name;
         categorias.appendChild(opt);
     });
+
+    updateSelectedInfo();
 }
 
 async function cargarFamilias() {
@@ -63,6 +85,7 @@ async function cargarFamilias() {
             btn.textContent = 'Impersonar';
             btn.addEventListener('click', () => {
                 usuarioSel.value = u.id;
+                updateSelectedInfo();
             });
             uItem.appendChild(btn);
             sub.appendChild(uItem);
@@ -104,6 +127,7 @@ form.addEventListener('submit', async (e) => {
     lista.appendChild(item);
 
     form.reset();
+    updateSelectedInfo();
 });
 
 familyForm.addEventListener('submit', async (e) => {

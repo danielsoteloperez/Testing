@@ -44,7 +44,8 @@ Para trabajar en un contenedor de desarrollo realiza los siguientes pasos:
    carpeta dentro de él.
 4. Al iniciarse el contenedor se ejecutará `start_services.sh`, que levanta el
    backend en el puerto 8000 y un servidor estático para el frontend en el
-   puerto 8001.
+   puerto 8001. Durante la construcción se instalan Node.js y Cordova para
+   poder compilar la aplicación móvil.
 5. Antes de usar la aplicación crea la base de datos:
    ```bash
    sqlite3 expenses.db < backend/schema.sql
@@ -72,3 +73,17 @@ Ejecuta:
 python backend/test_backend.py
 node frontend/test_frontend.js
 ```
+
+### Compilación para móviles
+
+Se incluye el script `build_mobile.sh` para generar aplicaciones Android e iOS
+utilizando Cordova. Tras crear el contenedor de desarrollo, las dependencias
+necesarias ya estarán instaladas y podrás ejecutar:
+
+```bash
+./build_mobile.sh android  # compila para Android
+./build_mobile.sh ios      # compila para iOS
+```
+
+Los proyectos generados en `mobile/` pueden abrirse con Android Studio o Xcode
+para obtener los binarios finales.

@@ -1,3 +1,6 @@
 __pycache__/
 *.db
 *.log
+mobile/node_modules/
+mobile/platforms/
+mobile/plugins/
