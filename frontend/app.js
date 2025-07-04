@@ -8,6 +8,7 @@ const userForm = document.getElementById('user-form');
 const familySelect = document.getElementById('family-select');
 const familiesList = document.getElementById('familias');
 const selectedInfo = document.getElementById('selected-info');
+const voiceBtn = document.getElementById('voice-btn');
 
 let familiesData = [];
 let usersData = [];
@@ -156,6 +157,49 @@ userForm.addEventListener('submit', async (e) => {
     });
     location.reload();
 });
+
+function procesarComandoVoz(texto) {
+    const re = /inserta\s+(\d+(?:[\.,]\d+)?)\s*(?:euros|€)?\s+de\s+gastos\s+de\s+(\w+)\s+en\s+el\s+(\w+)/i;
+    const m = texto.match(re);
+    if (!m) {
+        console.warn('No se pudo interpretar el comando');
+        return;
+    }
+    const cantidad = parseFloat(m[1].replace(',', '.'));
+    const usuarioNom = m[2].toLowerCase();
+    const categoriaNom = m[3].toLowerCase();
+    const user = usersData.find(u => u.username.toLowerCase() === usuarioNom);
+    const catOption = Array.from(categorias.options).find(o => o.textContent.toLowerCase() === categoriaNom);
+    if (!user || !catOption) {
+        console.warn('Usuario o categoría no encontrados');
+        return;
+    }
+    usuarioSel.value = user.id;
+    categorias.value = catOption.value;
+    const desc = categoriaNom;
+    document.getElementById('descripcion').value = desc;
+    document.getElementById('cantidad').value = cantidad;
+    form.dispatchEvent(new Event('submit'));
+}
+
+function iniciarVoz() {
+    const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.warn('Speech recognition not available');
+        return;
+    }
+    const recog = new SpeechRecognition();
+    recog.lang = 'es-ES';
+    recog.onresult = (e) => {
+        const texto = e.results[0][0].transcript;
+        procesarComandoVoz(texto);
+    };
+    recog.start();
+}
+
+if (voiceBtn && voiceBtn.addEventListener) {
+    voiceBtn.addEventListener('click', iniciarVoz);
+}
 
 cargarOpciones();
 cargarFamilias();

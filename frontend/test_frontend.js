@@ -17,7 +17,8 @@ const elements = {
   'username': { value: 'user1' },
   'userpass': { value: 'pass' },
   'family-select': { value: '1', appendChild() {} },
-  'familias': { innerHTML: '', appendChild(child) { this._child = child; } }
+  'familias': { innerHTML: '', appendChild(child) { this._child = child; } },
+  'voice-btn': { addEventListener(ev, cb) { if (ev === 'click') elements._voice = cb; } }
 };
 
 let created = [];
@@ -51,6 +52,7 @@ expect('family-form', 'family form');
 expect('user-form', 'user form');
 expect('gasto-form', 'expense form');
 expect('usuario', 'user select');
+expect('voice-btn', 'voice button');
 
 // Execute the front-end script in this context
 vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));
