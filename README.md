@@ -6,8 +6,13 @@ Este repositorio contiene una pequeña aplicación para registrar gastos de form
 - `.devcontainer/` configuración para VS Code.
 
 ## Base de datos
-Al iniciar el backend se crea automáticamente la base de datos `expenses.db` con una estructura pensada para manejar familias y usuarios.
-Se genera una familia de ejemplo denominada *Familia root* con el usuario `root` (contraseña `test`). Este usuario dispone de una cuenta *Personal* y las categorías *Bares* y *Compra*.
+La base de datos ya no se genera al iniciar la API. Ejecuta manualmente el script `backend/schema.sql` para crear `expenses.db`:
+
+```bash
+sqlite3 expenses.db < backend/schema.sql
+```
+
+El script crea la estructura necesaria e inserta una familia de ejemplo denominada *Familia root* con el usuario `root` (contraseña `test`). Dicho usuario dispone de una cuenta *Personal* y las categorías *Bares* y *Compra*.
 
 ## Primeros pasos
 
@@ -16,15 +21,19 @@ Se genera una familia de ejemplo denominada *Familia root* con el usuario `root`
    ```bash
    pip install -r backend/requirements.txt
    ```
-2. Iniciar el backend manualmente:
+2. Crear la base de datos ejecutando el script SQL:
+   ```bash
+   sqlite3 expenses.db < backend/schema.sql
+   ```
+3. Iniciar el backend manualmente:
    ```bash
    uvicorn backend.main:app --reload
    ```
-3. En otra terminal servir el frontend:
+4. En otra terminal servir el frontend:
    ```bash
    python -m http.server 8001 --directory frontend
    ```
-4. Abrir `http://localhost:8001` en el navegador.
+5. Abrir `http://localhost:8001` en el navegador.
 
 ### Dev container (VS Code)
 Para trabajar en un contenedor de desarrollo realiza los siguientes pasos:
@@ -36,7 +45,11 @@ Para trabajar en un contenedor de desarrollo realiza los siguientes pasos:
 4. Al iniciarse el contenedor se ejecutará `start_services.sh`, que levanta el
    backend en el puerto 8000 y un servidor estático para el frontend en el
    puerto 8001.
-5. Abre `http://localhost:8001` para usar la aplicación. La base de datos se
+5. Antes de usar la aplicación crea la base de datos:
+   ```bash
+   sqlite3 expenses.db < backend/schema.sql
+   ```
+6. Abre `http://localhost:8001` para usar la aplicación. La base de datos se
    almacena en la carpeta del proyecto, por lo que persiste entre sesiones.
 
 ### Uso con Docker
