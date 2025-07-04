@@ -172,17 +172,17 @@ userForm.addEventListener('submit', async (e) => {
 
 function procesarComandoVoz(texto) {
     logClient(`voz: ${texto}`);
-    const re = /inserta\s+(\d+(?:[\.,]\d+)?)\s*(?:euros|€)?\s+de\s+gastos\s+de\s+(\w+)\s+en\s+el\s+(\w+)/i;
+    const re = /(inserta|insertar)\s+€?\s*(\d+(?:[\.,]\d+)?)\s*€?\s+(?:de\s+gastos\s+)?(?:de|para)\s+(\w+)\s+en\s+(?:el|la|los|las)\s+(\w+)/i;
     const m = texto.match(re);
     if (!m) {
-        const ejemplo = 'inserta 5 euros de gastos de comida en el super';
+        const ejemplo = 'inserta 5€ de gastos para root en los bares';
         console.warn(`No se pudo interpretar el comando: "${texto}". Debe ser similar a "${ejemplo}"`);
         logClient(`Error: comando no coincide con la expresión. Recibido: "${texto}"`);
         return;
     }
-    const cantidad = parseFloat(m[1].replace(',', '.'));
-    const usuarioNom = m[2].toLowerCase();
-    const categoriaNom = m[3].toLowerCase();
+    const cantidad = parseFloat(m[2].replace(',', '.'));
+    const usuarioNom = m[3].toLowerCase();
+    const categoriaNom = m[4].toLowerCase();
     const user = usersData.find(u => u.username.toLowerCase() === usuarioNom);
     const catOption = Array.from(categorias.options).find(o => o.textContent.toLowerCase() === categoriaNom);
     if (!user || !catOption) {
