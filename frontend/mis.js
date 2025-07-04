@@ -4,6 +4,15 @@ const selectedInfo = document.getElementById('selected-info');
 let usersData = [];
 let familiesData = [];
 
+function setSelectedUser(id) {
+    usuarioSel.value = String(id);
+    try {
+        localStorage.setItem('selectedUserId', String(id));
+    } catch (e) {
+        /* ignore storage errors */
+    }
+}
+
 function updateSelectedInfo() {
     const userId = parseInt(usuarioSel.value);
     const user = usersData.find(u => u.id === userId);
@@ -26,6 +35,10 @@ async function cargarUsuarios() {
         opt.textContent = u.username;
         usuarioSel.appendChild(opt);
     });
+    const stored = localStorage.getItem('selectedUserId');
+    if (stored && usersData.find(u => u.id === parseInt(stored))) {
+        usuarioSel.value = stored;
+    }
     updateSelectedInfo();
     cargarGastos();
 }
@@ -42,6 +55,7 @@ async function cargarGastos() {
 }
 
 usuarioSel.addEventListener('change', () => {
+    setSelectedUser(parseInt(usuarioSel.value));
     updateSelectedInfo();
     cargarGastos();
 });

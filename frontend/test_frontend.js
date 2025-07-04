@@ -4,6 +4,14 @@ const famHtml = fs.readFileSync(__dirname + '/familias.html', 'utf8');
 const catHtml = fs.readFileSync(__dirname + '/categorias.html', 'utf8');
 const vm = require('vm');
 
+// simple localStorage stub
+const storage = {};
+global.localStorage = {
+  getItem: k => (k in storage ? storage[k] : null),
+  setItem: (k, v) => { storage[k] = String(v); },
+  removeItem: k => { delete storage[k]; }
+};
+
 // Minimal DOM stubs
 const elements = {
   'gasto-form': {
@@ -94,6 +102,11 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));
   btn._click();
   if (String(elements.usuario.value) !== '2') throw new Error('Impersonation failed');
 
+  // simulate new page load
+  elements.usuario.value = '1';
+  await init();
+  if (String(elements.usuario.value) !== '2') throw new Error('Impersonation not persisted');
+
   procesarComandoVoz('inserta 1,5 de u en los Cat');
 
   elements.descripcion.value = '';
@@ -106,6 +119,24 @@ vm.runInThisContext(fs.readFileSync(__dirname + '/app.js', 'utf8'));
   const voice = JSON.parse(expenseCalls[0].opts.body);
   const last = JSON.parse(expenseCalls[expenseCalls.length - 1].opts.body);
   if (voice.amount !== 1.5 || last.description !== 'test gasto') throw new Error('Wrong payload');
+
+  // Ensure script works without family-select element
+  const elements2 = {
+    'family-category-select': { value: '1', appendChild() {} },
+    'category-form': { addEventListener() {}, reset() {} }
+  };
+  const doc2 = {
+    getElementById: id => elements2[id],
+    createElement: global.document.createElement
+  };
+  vm.runInNewContext(fs.readFileSync(__dirname + '/app.js', 'utf8'), {
+    document: doc2,
+    fetch: global.fetch,
+    location: { reload() {} },
+    console,
+    localStorage
+  });
+
   console.log('Frontend tests passed');
 })();
 
