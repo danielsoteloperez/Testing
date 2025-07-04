@@ -19,4 +19,4 @@ yes | cmdline-tools/latest/bin/sdkmanager --licenses
 cmdline-tools/latest/bin/sdkmanager \
     "platform-tools" \
     "platforms;android-33" \
-    "build-tools;33.0.2"
+    "build-tools;35.0.0"
