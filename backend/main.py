@@ -5,6 +5,7 @@ from typing import List
 import sqlite3
 from hashlib import sha256
 import logging
+import os
 
 app = FastAPI()
 
@@ -31,6 +32,16 @@ def get_conn():
 
 
 def init_db():
+    # If an old database exists without the user_id column, start fresh
+    if os.path.exists(DB_PATH):
+        tmp_conn = sqlite3.connect(DB_PATH)
+        cur = tmp_conn.cursor()
+        cur.execute("PRAGMA table_info(expenses)")
+        cols = [r[1] for r in cur.fetchall()]
+        tmp_conn.close()
+        if cols and "user_id" not in cols:
+            os.remove(DB_PATH)
+
     conn = get_conn()
     c = conn.cursor()
     c.execute(
