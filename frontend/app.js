@@ -17,6 +17,18 @@ const headerUserInfo = document.getElementById('header-user-info');
 let familiesData = [];
 let usersData = [];
 
+function setSelectedUser(id) {
+    if (usuarioSel) {
+        usuarioSel.value = String(id);
+    }
+    try {
+        localStorage.setItem('selectedUserId', String(id));
+    } catch (e) {
+        /* ignore storage errors */
+    }
+    updateSelectedInfo();
+}
+
 async function logClient(msg) {
     try {
         await fetch('http://localhost:8000/client-log/', {
@@ -51,10 +63,10 @@ function updateSelectedInfo() {
 
 if (usuarioSel && usuarioSel.addEventListener) {
     usuarioSel.addEventListener('change', () => {
-        updateSelectedInfo();
         const userId = parseInt(usuarioSel.value);
         const user = usersData.find(u => u.id === userId);
         if (user) cargarCategorias(user.family_id);
+        setSelectedUser(userId);
     });
 }
 
@@ -62,10 +74,12 @@ async function cargarOpciones() {
     const famResp = await fetch('http://localhost:8000/families/');
     familiesData = await famResp.json();
     familiesData.forEach(f => {
-        const opt = document.createElement('option');
-        opt.value = f.id;
-        opt.textContent = f.name;
-        familySelect.appendChild(opt);
+        if (familySelect) {
+            const opt = document.createElement('option');
+            opt.value = f.id;
+            opt.textContent = f.name;
+            familySelect.appendChild(opt);
+        }
         if (familyCatSelect) {
             const opt2 = document.createElement('option');
             opt2.value = f.id;
@@ -83,6 +97,10 @@ async function cargarOpciones() {
             opt.textContent = u.username;
             usuarioSel.appendChild(opt);
         });
+        const stored = localStorage.getItem('selectedUserId');
+        if (stored && usersData.find(u => u.id === parseInt(stored))) {
+            usuarioSel.value = stored;
+        }
     }
 
     if (cuentas) {
@@ -97,11 +115,18 @@ async function cargarOpciones() {
     }
 
     if (usersData.length && categorias) {
-        const firstUser = usersData[0];
-        await cargarCategorias(firstUser.family_id);
+        let user = usersData[0];
+        const stored = localStorage.getItem('selectedUserId');
+        if (stored) {
+            const found = usersData.find(u => u.id === parseInt(stored));
+            if (found) user = found;
+        }
+        await cargarCategorias(user.family_id);
     }
 
-    updateSelectedInfo();
+    const storedId = localStorage.getItem('selectedUserId');
+    if (storedId) setSelectedUser(parseInt(storedId));
+    else updateSelectedInfo();
 }
 
 async function cargarCategorias(familyId) {
@@ -134,8 +159,9 @@ async function cargarFamilias() {
             const btn = document.createElement('button');
             btn.textContent = 'Impersonar';
             btn.addEventListener('click', () => {
-                usuarioSel.value = u.id;
-                updateSelectedInfo();
+                setSelectedUser(u.id);
+                const user = usersData.find(us => us.id === u.id);
+                if (user) cargarCategorias(user.family_id);
             });
             uItem.appendChild(btn);
             sub.appendChild(uItem);
@@ -263,6 +289,7 @@ function procesarComandoVoz(texto) {
         return;
     }
     usuarioSel.value = user.id;
+    setSelectedUser(user.id);
     categorias.value = catOption.value;
     const desc = categoriaNom;
     document.getElementById('descripcion').value = desc;
