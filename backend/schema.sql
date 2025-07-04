@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS accounts (
 
 CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
+    family_id INTEGER,
     name TEXT,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(family_id) REFERENCES families(id)
 );
 
 CREATE TABLE IF NOT EXISTS expenses (
@@ -45,5 +45,10 @@ CREATE TABLE IF NOT EXISTS expenses (
 INSERT INTO families (name) VALUES ('Familia root');
 INSERT INTO users (family_id, username, password) VALUES (1, 'root', '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08');
 INSERT INTO accounts (user_id, name) VALUES (1, 'Personal');
-INSERT INTO categories (user_id, name) VALUES (1, 'Bares');
-INSERT INTO categories (user_id, name) VALUES (1, 'Compra');
+INSERT INTO categories (family_id, name) VALUES (1, 'Alquiler');
+INSERT INTO categories (family_id, name) VALUES (1, 'Super');
+INSERT INTO categories (family_id, name) VALUES (1, 'Compra');
+INSERT INTO categories (family_id, name) VALUES (1, 'Bares');
+INSERT INTO categories (family_id, name) VALUES (1, 'Farmacia');
+INSERT INTO categories (family_id, name) VALUES (1, 'Luz');
+INSERT INTO categories (family_id, name) VALUES (1, 'Gasolina');

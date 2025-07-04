@@ -25,3 +25,24 @@ Con las dependencias instaladas en el contenedor ejecuta:
 ```
 Los proyectos generados quedan en `mobile/`.
 
+## Comandos de voz
+
+El botón **Agregar por Voz** permite crear gastos dictando frases que sigan
+alguna de estas variantes:
+
+- `inserta 5€ de gastos para <usuario> en los <categoria>`
+- `insertar 5 euros de <usuario> en la <categoria>`
+- `inserta 5 de <usuario> en el <categoria>`
+
+La cantidad puede expresarse con o sin el símbolo `€` y la parte `de gastos`
+es opcional. El sistema reconocerá el usuario y la categoría indicados y
+registrará automáticamente el gasto.
+
+## Categorías por familia
+
+Cada familia dispone de sus propias categorías. Al crear una familia se
+generan por defecto las siguientes: **Alquiler**, **Super**, **Compra**,
+**Bares**, **Farmacia**, **Luz** y **Gasolina**. Se pueden añadir más categorías
+enviando peticiones al endpoint `/categories/` con el `family_id`
+correspondiente y el nombre deseado.
+

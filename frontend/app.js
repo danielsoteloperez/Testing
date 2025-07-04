@@ -38,7 +38,12 @@ function updateSelectedInfo() {
 }
 
 if (usuarioSel && usuarioSel.addEventListener) {
-    usuarioSel.addEventListener('change', updateSelectedInfo);
+    usuarioSel.addEventListener('change', () => {
+        updateSelectedInfo();
+        const userId = parseInt(usuarioSel.value);
+        const user = usersData.find(u => u.id === userId);
+        if (user) cargarCategorias(user.family_id);
+    });
 }
 
 async function cargarOpciones() {
@@ -69,7 +74,17 @@ async function cargarOpciones() {
         cuentas.appendChild(opt);
     });
 
-    const catResp = await fetch('http://localhost:8000/categories/');
+    if (usersData.length) {
+        const firstUser = usersData[0];
+        await cargarCategorias(firstUser.family_id);
+    }
+
+    updateSelectedInfo();
+}
+
+async function cargarCategorias(familyId) {
+    categorias.innerHTML = '';
+    const catResp = await fetch(`http://localhost:8000/categories/family/${familyId}`);
     const cats = await catResp.json();
     cats.forEach(c => {
         const opt = document.createElement('option');
@@ -77,8 +92,6 @@ async function cargarOpciones() {
         opt.textContent = c.name;
         categorias.appendChild(opt);
     });
-
-    updateSelectedInfo();
 }
 
 async function cargarFamilias() {
@@ -111,9 +124,12 @@ async function cargarFamilias() {
 async function cargarGastos() {
     const resp = await fetch('http://localhost:8000/expenses/');
     const gastos = await resp.json();
+    lista.innerHTML = '';
     gastos.forEach(g => {
+        const user = usersData.find(u => u.id === g.user_id);
+        const nombre = user ? user.username : 'desconocido';
         const item = document.createElement('li');
-        item.textContent = `${g.description} - ${g.amount}€`;
+        item.textContent = `${nombre}: ${g.description} - ${g.amount}€`;
         lista.appendChild(item);
     });
 }
