@@ -72,6 +72,7 @@ Ejecuta:
 ```bash
 python backend/test_backend.py
 node frontend/test_frontend.js
+node test_mobile.js
 ```
 
 ### Compilación para móviles
