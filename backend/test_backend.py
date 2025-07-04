@@ -18,6 +18,7 @@ def test_flow():
     gastos = main.list_expenses()
     assert any(e.description == 'test' for e in gastos)
 
+
 if __name__ == '__main__':
     test_flow()
     print('Backend tests passed')
